@@ -16,5 +16,13 @@ namespace Site.Models.Pages
             GroupName = SystemTabNames.Content,
             Order = 10)]
         public virtual XhtmlString Content { get; set; }
+
+
+        [Display(
+            Name = "Conten At",
+            Description = "Content A",
+            GroupName = SystemTabNames.Content,
+            Order = 10)]
+        public virtual ContentArea ContentA { get; set; }
     }
 }

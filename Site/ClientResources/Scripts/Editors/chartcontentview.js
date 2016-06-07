@@ -21,9 +21,12 @@
     "dojox/charting/plot2d/Lines",
     "dojox/charting/plot2d/Pie",
     "dojox/charting/Chart2D",
+    "dojox/charting/DataSeries",
+    "dojox/charting/DataChart",
 
     "epi/dependency",
     "epi/routes",
+    "dojo/topic",
 
     "dojo/domReady!",
     "dojo/parser"
@@ -50,9 +53,12 @@
     Lines,
     Pie,
     Chart2D,
+    DataSeries,
+    DataChart,
 
     dependency,
     routes,
+    topic,
     parser
     ) {
         return declare("app.editors.chartcontentview", [
@@ -68,7 +74,7 @@
             postCreate: function () {
                 
                 ready(this, function () {
-                    this.target = new Target("chartlist", { horizontal: "true", accept: ["charts-menu-item"], creator: this.chartsContentCreator });
+                    this.target = new Target("chartlist", { horizontal: "true", accept: ["episerver.core.icontentdata"], creator: this.chartsContentCreator });
 
                     on(this.target, 'DndDrop', lang.hitch(this, this.onDndDrop));
 
@@ -130,12 +136,14 @@
             },
 
             onDndDrop: function (source, nodes, copy, target) {
-                var data = source.getItem(nodes[0].id)
+                //var data = source.getItem(nodes[0].id)
 
                 var chartId = Object.keys(target.selection)[0];                        
                 var divChart = dom.byId(chartId).childNodes[0];
 
-                dojo.when(this.statsStore.query(
+                this.renderChart(divChart, null);
+
+                /*dojo.when(this.statsStore.query(
                 {
                     currentPageId: this.currentContentId,
                     chartTypeId: data.data.id
@@ -147,7 +155,7 @@
                 for(var i in target.map){
                     charts.push(target.getItem(i).data.id);
                 }
-                this.statsStore.put({ currentPageId: this.currentContentId, guids: charts });
+                this.statsStore.put({ currentPageId: this.currentContentId, guids: charts });*/
                 dojo.query(".remove-chart").connect("onclick", lang.hitch(this, this.removeChart));
             },
 
@@ -164,13 +172,25 @@
                 this.statsStore.put({ currentPageId: this.currentContentId, guids: charts });
             },
 
-            renderChart: function(id, data) {
+            renderChart: function (id, data) {
+                var registry = dependency.resolve("epi.storeregistry");
+                registry.create("app.chartstore1", routes.getRestPath({ moduleArea: "app", storeName: "chartstore1" }));
+                var chartstore = registry.get("app.chartstore1");
+
+                var lines = new dojox.charting.DataChart(id, {
+                    displayRange: 7,
+                    xaxis: { labels: ["0", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"] },
+                    type: dojox.charting.plot2d.Lines
+                });
+                lines.setStore(chartstore, { symbol: "*" }, "historicPrice");
+
                 var chart2 = new Chart(id);
-                chart2.title = data.name;
+                chart2.title = "testtest";
                 chart2.titlePos = "bottom";
                 chart2.titleGap = 25;
                 chart2.titleFont = "20px Myriad,Helvetica,Tahoma,Arial,clean,sans-serif";
                 chart2.titleFontColor = "#333";
+                this.renderLineChart(chart2, null);
 
                 switch (data.type) {
                     case "LineChart":
@@ -189,8 +209,13 @@
                 chart.addPlot("default", { type: "Lines" });
                 chart.addAxis("y", { min: 1, max: 20, vertical: true, fixLower: "major", fixUpper: "major" });
 
-                chart.addAxis("x", { labels: data.data.xLabels });
-                chart.addSeries("Series 1", data.data.series);
+                //chart.addAxis("x", { labels: data.data.xLabels });
+                //chart.addSeries("Series 1", data.data.series);
+                var registry = dependency.resolve("epi.storeregistry");
+                registry.create("app.chartstore1", routes.getRestPath({ moduleArea: "app", storeName: "chartstore1" }));
+                var chartstore = registry.get("app.chartstore1");
+
+                chart.addSeries("Series 2", new DataSeries(chartstore, { query: { site: 1 } }, "value"));
 
                 chart.render();
             },
