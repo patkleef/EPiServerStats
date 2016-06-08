@@ -69,7 +69,7 @@ namespace Site.Business.Widgets
                 return new[]
                 {
                     typeof(ContentFolder),
-                    typeof(ChartData1)
+                    typeof(ChartData)
                 };
             }
         }
@@ -82,7 +82,7 @@ namespace Site.Business.Widgets
             {
                 return new System.Type[]
                 {
-                    typeof(ChartData1)
+                    typeof(ChartData)
                 };
             }
         }

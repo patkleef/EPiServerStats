@@ -7,6 +7,6 @@ namespace Site.Business
     [ServiceConfiguration(typeof(ChartRegistration), Lifecycle = ServiceInstanceScope.Singleton)]
     public class ChartRegistration
     {
-        public IList<BaseChartType> Charts = new List<BaseChartType>();
+        //public IList<BaseChartType> Charts = new List<BaseChartType>();
     }
 }

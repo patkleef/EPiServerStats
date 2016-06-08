@@ -1,25 +1,30 @@
 ﻿using EPiServer.Core;
+using EPiServer.DataAnnotations;
 using Site.Business.Charts.Data;
+using Site.Business.Charts.Data.Models;
 using System;
+using System.Collections.Generic;
 
 namespace Site.Business.Charts
 {
-    public class PageModifiedByChart : BaseChartType
+    [ContentType(DisplayName = "Page modified by chart", GUID = "D4E38D41-D8D0-4EA0-ADEF-B2343FC111CA", Description = "")]
+    public class PageModifiedByChart : ChartData
     {
-        public PageModifiedByChart()
+        public override ChartType ChartType
         {
-            Id = Guid.Parse("73987E48-A770-4C13-8DBA-D65AAC52C43C");
-            Name = "Page modified by";
-            Type = ChartType.PieChart;
+            get
+            {
+                return ChartType.PieChart;
+            }
         }
 
-        public override ChartData GetChartData(ContentReference contentReference)
+        public override ChartDataSource GetChartDataSource(ContentReference contentReference)
         {
             var pieChart = new PieChartData();
-            pieChart.Series = new[] {
-                new { y = 10, Text = "Patrick" },
-                new { y = 30, Text = "Kelly" },
-                new { y = 10, Text = "Jan" }};
+            pieChart.Series = new List<PieDataSet> {
+                new PieDataSet { Y = 10, Text = "Patrick" },
+                new PieDataSet { Y = 30, Text = "Kelly" },
+                new PieDataSet { Y = 10, Text = "Jan" }};
 
             return pieChart;
         }

@@ -18,7 +18,7 @@ namespace Site.Business
         {
             var chartRegistration = ServiceLocator.Current.GetInstance<ChartRegistration>();
 
-            var typeScannerLookup = ServiceLocator.Current.GetInstance<ITypeScannerLookup>();
+            /*var typeScannerLookup = ServiceLocator.Current.GetInstance<ITypeScannerLookup>();
             var sourceTypes = typeScannerLookup.AllTypes.Where(
                 t => typeof(BaseChartType).IsAssignableFrom(t) && t != typeof(BaseChartType));
 
@@ -27,7 +27,7 @@ namespace Site.Business
                 var type = (BaseChartType)ServiceLocator.Current.GetInstance(sourceType);
 
                 chartRegistration.Charts.Add(type);
-            }
+            }*/
         }
 
         public void Uninitialize(InitializationEngine context)

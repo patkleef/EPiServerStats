@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Site.Business.Charts.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace Site.Business.Charts.Data
 {
-    public class PieChartData : ChartData
+    public class PieChartData : ChartDataSource
     {
-        public object Series { get; set; }
+        public List<PieDataSet> Series { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.ServiceLocation;
 using EPiServer.Shell.Services.Rest;
+using Site.Business.Charts;
 using Site.Business.Data;
 using System;
 using System.Collections.Generic;
@@ -33,9 +34,25 @@ namespace Site.Business.Store
         }
 
         [HttpGet]
-        public RestResult Get(int? currentPageId, Guid? chartTypeId)
+        public RestResult Get(int? currentPageId, int? chartId)
         {
-            if (currentPageId.HasValue && chartTypeId.HasValue)
+            if (currentPageId.HasValue && chartId.HasValue)
+            {
+                var currentPage = _contentRepository.Get<PageData>(new ContentReference(currentPageId.Value));
+                var chart = _contentRepository.Get<ChartData>(new ContentReference(chartId.Value));
+
+                var data = chart.GetChartDataSource(currentPage.ContentLink);
+
+                return Rest(data);
+            }
+            return Rest(string.Empty);
+
+
+
+
+
+
+            /*if (currentPageId.HasValue && chartTypeId.HasValue)
             {
                 var chart = _chartRegistration.Charts.FirstOrDefault(c => c.Id == chartTypeId.Value);
 
@@ -66,7 +83,8 @@ namespace Site.Business.Store
             else
             {
                 return Rest(_chartRegistration.Charts);
-            }         
+            }    */
+            return Rest(string.Empty);     
         }
 
         [HttpPost]

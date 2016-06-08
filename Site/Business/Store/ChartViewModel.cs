@@ -17,7 +17,7 @@ namespace Site.Business.Store
 
         public ChartData Data { get; set; }
 
-        public static ChartViewModel FromBaseChartType(BaseChartType chart, ContentReference contentReference)
+        /*public static ChartViewModel FromBaseChartType(BaseChartType chart, ContentReference contentReference)
         {
             return new ChartViewModel
             {
@@ -26,6 +26,6 @@ namespace Site.Business.Store
                 Type = chart.Type.ToString(),
                 Data = chart.GetChartData(contentReference)
             };            
-        }
+        }*/
     }
 }

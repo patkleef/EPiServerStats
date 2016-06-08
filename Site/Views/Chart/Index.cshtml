@@ -1,0 +1,48 @@
+﻿@model Site.Business.Charts.ChartData
+
+@{
+    var settings = Site.Business.Helper.EPiServerInitializationHelper.GetModuleSettings();
+
+}
+
+<html>
+    <head>
+        <style>
+            .preview-charts, .charts-container { width: 400px; height:400px;}
+        </style>
+        <script data-dojo-config="parseOnLoad: true, isDebug: false, async: 1,
+            packages: [{
+                name: 'app',
+                location: '/ClientResources/Scripts/'
+            }]"
+            src="/EPiServer/Shell/9.6.2.0/ClientResources/dojo/dojo.js"></script>
+
+        <script type='text/javascript'>
+
+            require([
+                "epi/shell/Bootstrapper"
+            ], function (
+                 Bootstrapper
+                ) {
+                var cmsModuleSettings = @Html.Raw(Html.SerializeObject(settings, "application/json"));
+                    var bs = new Bootstrapper(cmsModuleSettings);
+                    bs.initializeApplication(null, "CMS").then(function () {
+                        require([
+                            "app/editors/chartpreview",
+                            "dojo/parser",
+                            "dojo/domReady!"
+                        ], function (chartpreview, parser, domReady) {
+                            parser.parse();
+                        });
+                    });
+            });
+
+
+        </script>
+
+    </head>
+<body>
+    <div class="preview-charts" data-dojo-type="app/editors/chartpreview" 
+         data-dojo-props="currentPageId: '4', chartId: '@Model.ContentLink.ID', title: '@Model.Title', titlePosition: '@Model.TitlePosition', theme: '@Model.Theme', effects: '@Model.ActionAndEffects', legend: '@Model.ShowLegend'"></div>
+</body>
+</html>
