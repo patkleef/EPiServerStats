@@ -22,16 +22,16 @@ namespace Site.Business.Charts
         public override ChartDataSource GetChartDataSource(ContentReference contentReference)
         {
             var barChartData = new ColumnChartData();
-            var xLabelList = new List<AxLabel>();
+            var xLabelList = new List<AxLabelItem>();
             var seriesList = new List<int>();
             var random = new Random();
             for (int i = 1; i <= 12; i++)
             {
-                xLabelList.Add(new AxLabel { Value = i, Text = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) });
+                xLabelList.Add(new AxLabelItem { Value = i, Text = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) });
                 seriesList.Add(random.Next(0, 20));
             }
 
-            barChartData.XLabels = xLabelList;
+            //barChartData.XLabels = xLabelList;
             barChartData.Series = seriesList.ToArray();
             return barChartData;
         }

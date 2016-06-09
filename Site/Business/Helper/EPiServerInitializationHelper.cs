@@ -20,13 +20,15 @@ namespace Site.Business.Helper
             var modules = ServiceLocator.Current.GetInstance<ModuleTable>();
             var resourceService = ServiceLocator.Current.GetInstance<IClientResourceService>();
 
-            var moduleList = modules.GetModules()
+            var moduleList = modules.GetModules().Where(m => new string[] { "CMS", "Shell" }.Contains(m.Name))
                 .Select(m => m.CreateViewModel(modules, resourceService))
-                .OrderBy(mv => mv.ModuleDependencies != null ? mv.ModuleDependencies.Count : 0)
-                .ToList();
+                /*modules.GetModules()
+                .Select(m => m.CreateViewModel(modules, resourceService))
+                .OrderBy(mv => mv.ModuleDependencies != null ? mv.ModuleDependencies.Count : 0)*/
+                ;
 
-            foreach (ModuleViewModel mvm in moduleList)
-                   mvm.ScriptResources.RemoveWhere(r => r.EndsWith("/ReportCenter.js", StringComparison.OrdinalIgnoreCase));
+            //foreach (ModuleViewModel mvm in moduleList)
+                   //mvm.ScriptResources.RemoveWhere(r => r.EndsWith("/ReportCenter.js", StringComparison.OrdinalIgnoreCase));
 
                 return moduleList;
         }

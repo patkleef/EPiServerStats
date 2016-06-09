@@ -8,8 +8,9 @@ namespace Site.Business.Charts.Data
 {
     public class LineChartData : ChartDataSource
     {
-        public List<AxLabel> XLabels { get; set; }
+        public AxLabel XAxLabel { get; set; }
+        public AxLabel YAxLabel { get; set; }
 
-        public int[] Series { get; set; }
+        public IEnumerable<DataSeries> Series { get; set; }
     }
 }

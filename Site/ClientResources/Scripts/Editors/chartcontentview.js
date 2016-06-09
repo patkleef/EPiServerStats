@@ -26,6 +26,7 @@
 
     "epi/dependency",
     "epi/routes",
+    "epi-cms/contentediting/StandardToolbar",
     "dojo/topic",
 
     "dojo/domReady!",
@@ -58,6 +59,7 @@
 
     dependency,
     routes,
+    StandardToolbar,
     topic,
     parser
     ) {
@@ -70,15 +72,18 @@
             target: null,
             currentContentId: 1,
             templateString: template,
+            toolbar: null,
 
             postCreate: function () {
+                this.toolbar = new StandardToolbar();
+                this.toolbar.placeAt(this.toolbarArea, "first");
                 
                 ready(this, function () {
                     this.target = new Target("chartlist", { horizontal: "true", accept: ["episerver.core.icontentdata"], creator: this.chartsContentCreator });
 
                     on(this.target, 'DndDrop', lang.hitch(this, this.onDndDrop));
 
-                    var registry = dependency.resolve("epi.storeregistry");
+                    /*var registry = dependency.resolve("epi.storeregistry");
                     this.statsStore = registry.get("app.chartstore");
                     if (this.statsStore == null)
                     {
@@ -94,10 +99,26 @@
 
                     this.currentContentId = res[0];
 
-                    this.initCharts();                    
+                    this.initCharts();      */              
                 });
             },
+            
+            updateView: function (data, context, additionalParams) {
+                // summary:
+                //    Sets up the view by loading the URL of the inner iframe.
+                if (data && data.skipUpdateView) {
+                    return;
+                }
 
+                this.toolbar.update({
+                    currentContext: context,
+                    viewConfigurations: {
+                        availableViews: data.availableViews,
+                        viewName: data.viewName
+                    }
+                });
+            },
+            
             initCharts: function() {
                 dojo.when(this.statsStore.query(
                 {

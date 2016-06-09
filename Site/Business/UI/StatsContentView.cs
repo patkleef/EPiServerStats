@@ -14,7 +14,9 @@ namespace Site.Business.UI
             Key = "chartsContent";
             Name = "Charts content view";
             Description = "Charts content view";
+            //ControllerType = "epi-cms/widget/IFrameController";
             ControllerType = "app/editors/chartcontentview";
+            //ViewType = "app/editors/chartcontentview";
             HideFromViewMenu = false;
         }
     }    

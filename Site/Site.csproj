@@ -233,7 +233,11 @@
     <Compile Include="Business\Charts\Data\ChartDataSource.cs" />
     <Compile Include="Business\Charts\ChartType.cs" />
     <Compile Include="Business\Charts\Data\ColumnChartData.cs" />
+    <Compile Include="Business\Charts\Data\Models\AzTitleOrientation.cs" />
+    <Compile Include="Business\Charts\Data\Models\AxFixOption.cs" />
     <Compile Include="Business\Charts\Data\Models\AxLabel.cs" />
+    <Compile Include="Business\Charts\Data\Models\AxLabelItem.cs" />
+    <Compile Include="Business\Charts\Data\Models\DataSeries.cs" />
     <Compile Include="Business\Charts\Data\Models\PieDataSet.cs" />
     <Compile Include="Business\Charts\Data\PieChartData.cs" />
     <Compile Include="Business\Charts\Data\LineChartData.cs" />
@@ -272,6 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ClientResources\Scripts\Editors\chartinitializer.js" />
+    <Content Include="ClientResources\Scripts\Editors\chartwidget.js" />
     <Content Include="ClientResources\Scripts\Editors\chartpreview.js" />
     <Content Include="ClientResources\Scripts\Editors\chartsviewer.js" />
     <Content Include="ClientResources\Scripts\Editors\chartcontentview.js" />

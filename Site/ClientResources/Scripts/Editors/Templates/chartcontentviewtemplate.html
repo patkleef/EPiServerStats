@@ -1,99 +1,104 @@
-﻿<div style="background: #b8c0c5; width:100%; height:100%;">
-    <style>
-        ul.chartlist {
-            height: auto;
-            width: auto;
-            margin: 0px;
-            padding: 0px;
-            width: 100%;
-            height: auto;
-            min-height:400px;
-            float: left;
-            margin-top:30px;
-            border: 1px solid #FFF;
-        }
+﻿<div>
+    <div data-dojo-attach-point="toolbarArea" />
 
-        ul.chartlist li.dojoDndItem {
-            text-align: center;
-            vertical-align: middle;
-            font-size: 40px;
-            float: left;
-            list-style: none;
-            margin: 0px;
-            margin-left: 30px;
-            margin-bottom: 30px;
-            padding: 0px;
-            width: 300px;
-            height: 300px;
-            border: 3px solid #F7542B;
-            position:relative;
-            background-color:white;
-            padding:20px;
-        }
+    <div style="background: #b8c0c5; width:100%; height:100%;">
 
-        .remove-chart {
-            margin-left:302px;
-        }
+        <style>
+            ul.chartlist {
+                height: auto;
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+                width: 100%;
+                height: auto;
+                min-height: 400px;
+                float: left;
+                margin-top: 30px;
+                border: 1px solid #FFF;
+            }
 
-        .dojoDndItemOver {
-            background-color: #EDEDED;
-            cursor: pointer;
-        }
+                ul.chartlist li.dojoDndItem {
+                    text-align: center;
+                    vertical-align: middle;
+                    font-size: 40px;
+                    float: left;
+                    list-style: none;
+                    margin: 0px;
+                    margin-left: 30px;
+                    margin-bottom: 30px;
+                    padding: 0px;
+                    width: 300px;
+                    height: 300px;
+                    border: 3px solid #F7542B;
+                    position: relative;
+                    background-color: white;
+                    padding: 20px;
+                }
 
-        .dojoDndItemSelected {
-            color: #EDEDED;
-        }
+            .remove-chart {
+                margin-left: 302px;
+            }
 
-        .dojoDndItemAnchor {
-            background-color: #EDEDED;
-        }
+            .dojoDndItemOver {
+                background-color: #EDEDED;
+                cursor: pointer;
+            }
 
-        .dojoDndItemOver .dojoDndItemSelected {
-            background-color: #EDEDED;
-        }
+            .dojoDndItemSelected {
+                color: #EDEDED;
+            }
 
-        .dojoDndItemOver .dojoDndItemAnchor {
-            background-color: #EDEDED;
-        }
+            .dojoDndItemAnchor {
+                background-color: #EDEDED;
+            }
 
-        .dojoDndItemBefore {
-            border-left: 3px solid deepskyblue !important;
-        }
+            .dojoDndItemOver .dojoDndItemSelected {
+                background-color: #EDEDED;
+            }
 
-        .dojoDndItemAfter {
-            border-right: 3px solid deepskyblue !important;
-        }
+            .dojoDndItemOver .dojoDndItemAnchor {
+                background-color: #EDEDED;
+            }
 
-        .dojoDndAvatar {
-            border: 1px solid #CCCCCC;
-            width: 50px;
-            height: 50px;
-        }
+            .dojoDndItemBefore {
+                border-left: 3px solid deepskyblue !important;
+            }
 
-        .dojoDndAvatarHeader {
-            background-color: grey;
-        }
+            .dojoDndItemAfter {
+                border-right: 3px solid deepskyblue !important;
+            }
 
-        .dojoDndAvatarItem {
-            background-color: #FFFFFF;
-            border-bottom: 1px solid #CCCCCC;
-        }
+            .dojoDndAvatar {
+                border: 1px solid #CCCCCC;
+                width: 50px;
+                height: 50px;
+            }
 
-        .dojoDndAvatarItem .itemText {
-            font-size: 120%;
-        }
+            .dojoDndAvatarHeader {
+                background-color: grey;
+            }
 
-        .chart {
-            width: 300px;
-            height: 300px;
-        }
+            .dojoDndAvatarItem {
+                background-color: #FFFFFF;
+                border-bottom: 1px solid #CCCCCC;
+            }
 
-        .dojoDndAvatarItem td li.dojoDndItem .chart {
-            display: none;
-        }
-    </style>
+                .dojoDndAvatarItem .itemText {
+                    font-size: 120%;
+                }
 
-    <div id="container">
-        <ul id="chartlist" class="container chartlist"></ul>
+            .chart {
+                width: 300px;
+                height: 300px;
+            }
+
+            .dojoDndAvatarItem td li.dojoDndItem .chart {
+                display: none;
+            }
+        </style>
+
+        <div id="container">
+            <ul id="chartlist" class="container chartlist"></ul>
+        </div>
     </div>
 </div>

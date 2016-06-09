@@ -23,17 +23,32 @@ namespace Site.Business.Charts
         {
             var lineChartData = new LineChartData();
 
-            var xLabelList = new List<AxLabel>();
+            var xLabelList = new List<AxLabelItem>();
             var seriesList = new List<int>();
             var random = new Random();
             for (int i = 1; i <= 12; i++)
             {                
-                xLabelList.Add(new AxLabel { Value = i, Text= CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) });
+                xLabelList.Add(new AxLabelItem { Value = i, Text= CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i) });
                 seriesList.Add(random.Next(0, 20));
             }
 
-            lineChartData.XLabels = xLabelList;
-            lineChartData.Series = seriesList.ToArray();
+            lineChartData.XAxLabel = new AxLabel
+            {
+                Title = "Month",
+                TitleOrientation = AxTitleOrientation.Away,
+                FixLowerOption = AxFixOption.None,
+                FixUpperOption = AxFixOption.None,
+                Items = xLabelList
+            };
+            lineChartData.YAxLabel = new AxLabel
+            {
+                Title = "Month",
+                TitleOrientation = AxTitleOrientation.Away,
+                FixLowerOption = AxFixOption.Major,
+                FixUpperOption = AxFixOption.Major,
+                Vertical = true
+            };
+            lineChartData.Series = new[] { new DataSeries { Name = "Series 1", Color = "blue", Series = seriesList.ToArray() } };
 
             return lineChartData;
         }

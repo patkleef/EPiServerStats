@@ -1,5 +1,9 @@
 ﻿@model Site.Business.Charts.ChartData
 
+@using EPiServer.Framework.Web.Resources
+@using EPiServer.Shell
+@using EPiServer.Shell.Modules
+
 @{
     var settings = Site.Business.Helper.EPiServerInitializationHelper.GetModuleSettings();
 
@@ -10,13 +14,12 @@
         <style>
             .preview-charts, .charts-container { width: 400px; height:400px;}
         </style>
-        <script data-dojo-config="parseOnLoad: true, isDebug: false, async: 1,
-            packages: [{
-                name: 'app',
-                location: '/ClientResources/Scripts/'
-            }]"
-            src="/EPiServer/Shell/9.6.2.0/ClientResources/dojo/dojo.js"></script>
 
+        @Html.Raw(ClientResources.RenderResources("DojoDashboardCompatibility", new[] { ClientResourceType.Script }))
+        <script type="text/javascript" src="@Paths.ToShellClientResource("ClientResources/dojo/dojo.js")"></script>
+        <script type="text/javascript" src="@Paths.ToShellClientResource("ClientResources/epi/epi.js")"></script>
+       
+        
         <script type='text/javascript'>
 
             require([
@@ -43,6 +46,6 @@
     </head>
 <body>
     <div class="preview-charts" data-dojo-type="app/editors/chartpreview" 
-         data-dojo-props="currentPageId: '4', chartId: '@Model.ContentLink.ID', title: '@Model.Title', titlePosition: '@Model.TitlePosition', theme: '@Model.Theme', effects: '@Model.ActionAndEffects', legend: '@Model.ShowLegend'"></div>
+         data-dojo-props="currentPageId: '8', chartId: '@Model.ContentLink.ID', title: '@Model.Title', titlePosition: '@Model.TitlePosition', theme: '@Model.Theme', effects: '@Model.ActionAndEffects', legend: '@Model.ShowLegend'"></div>
 </body>
 </html>
