@@ -34,6 +34,7 @@
 
    "epi/dependency",
    "epi/routes",
+   "epi-cms/contentediting/StandardToolbar",
 
     "app/editors/ChartWidget"
 ], function (
@@ -71,21 +72,54 @@
 
    dependency,
    routes,
+   StandardToolbar,
    ChartWidget
 ) {
-    return declare("app.editors.chartpreview", [
+    return declare("app.editors.chartpreview",
+    [
         Widget, TemplatedMixin
     ],
     {
-        templateString: '<div id="chartsContainer" class="charts-container"></div>',
+        templateString: '<div data-dojo-attach-point="toolbarArea" /><div data-dojo-attach-point="chartsContainer" class="charts-container" />',
         chartsContainer: null,
+        toolbar: null,
+        currentContentId: null,
 
         postCreate: function () {
-            this.chartsContainer = dojo.byId("chartsContainer");
+            this.toolbar = new StandardToolbar();
+            this.toolbar.placeAt(this.toolbarArea, "first");
 
-            var chartWidget = new ChartWidget({ currentPageId: this.params.currentPageId, chartId: this.params.chartId });
+            //this.chartsContainer = dojo.byId("chartsContainer");
 
-            //this.chartsContainer.addChild(chartWidget);
+            var registry = dependency.resolve("epi.storeregistry");
+            this.contentStore = registry.get("epi.cms.content.light");
+
+            var contextService = epi.dependency.resolve("epi.shell.ContextService");
+            var currentContext = contextService.currentContext;
+            var res = currentContext.id.split("_");
+
+            this.currentContentId = res[0];
+
+            var chartWidget = new ChartWidget({
+                currentPageId: 8,
+                chartId: this.currentContentId
+            }).placeAt(this.chartsContainer);
+        },
+
+        updateView: function(data, context, additionalParams) {
+            // summary:
+            //    Sets up the view by loading the URL of the inner iframe.
+            if (data && data.skipUpdateView) {
+                return;
+            }
+
+            this.toolbar.update({
+                currentContext: context,
+                viewConfigurations: {
+                    availableViews: data.availableViews,
+                    viewName: data.viewName
+                }
+            });
         }
-    })
+    });
 });

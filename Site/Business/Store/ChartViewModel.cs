@@ -1,31 +1,29 @@
-﻿using EPiServer.Core;
-using Site.Business.Charts;
-using Site.Business.Charts.Data;
+﻿using Site.Business.Charts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Site.Business.Charts.Data;
 
 namespace Site.Business.Store
 {
     public class ChartViewModel
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; }
 
-        public string Type { get; set; }
+        public string TitlePosition { get; set; }
 
-        public ChartData Data { get; set; }
+        public string Description { get; set; }
 
-        /*public static ChartViewModel FromBaseChartType(BaseChartType chart, ContentReference contentReference)
-        {
-            return new ChartViewModel
-            {
-                Id = chart.Id,
-                Name = chart.Name,
-                Type = chart.Type.ToString(),
-                Data = chart.GetChartData(contentReference)
-            };            
-        }*/
+        public string Theme { get; set; }
+
+        public string ActionAndEffects { get; set; }
+
+        public bool ShowLegend { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ChartType ChartType { get; set; }
+
+        public ChartDataSource Data { get; set; }
     }
 }

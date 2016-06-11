@@ -39,56 +39,51 @@ namespace Site.Business.Store
             if (currentPageId.HasValue && chartId.HasValue)
             {
                 var currentPage = _contentRepository.Get<PageData>(new ContentReference(currentPageId.Value));
-                var chart = _contentRepository.Get<ChartData>(new ContentReference(chartId.Value));
 
-                var data = chart.GetChartDataSource(currentPage.ContentLink);
+                var model = CreateModel(chartId.Value, currentPage.ContentLink);
 
-                return Rest(data);
+                return Rest(model);
             }
-            return Rest(string.Empty);
-
-
-
-
-
-
-            /*if (currentPageId.HasValue && chartTypeId.HasValue)
-            {
-                var chart = _chartRegistration.Charts.FirstOrDefault(c => c.Id == chartTypeId.Value);
-
-                var currentPage = _contentRepository.Get<PageData>(new ContentReference(currentPageId.Value));
-
-                return Rest(ChartViewModel.FromBaseChartType(chart, currentPage.ContentLink));
-            }
-            else if (currentPageId.HasValue)
+            else if(currentPageId.HasValue && !chartId.HasValue)
             {
                 var currentPage = _contentRepository.Get<PageData>(new ContentReference(currentPageId.Value));
-
                 var pageCharts = _pageChartRepository.GetByContentGuid(currentPage.ContentGuid);
 
                 var list = new List<ChartViewModel>();
-                if (pageCharts != null && pageCharts.ChartTypes != null)
+                if (pageCharts != null && pageCharts.Charts != null)
                 {
-                    foreach (var guid in pageCharts.ChartTypes)
+                    foreach (var id in pageCharts.Charts)
                     {
-                        var chart = _chartRegistration.Charts.FirstOrDefault(c => c.Id == guid);
-                        if (chart != null)
-                        {
-                            list.Add(ChartViewModel.FromBaseChartType(chart, currentPage.ContentLink));
-                        }
+                        list.Add(CreateModel(id, currentPage.ContentLink));
                     }
                 }
+
                 return Rest(list);
             }
-            else
-            {
-                return Rest(_chartRegistration.Charts);
-            }    */
-            return Rest(string.Empty);     
+            return Rest(string.Empty);  
+        }
+
+        public ChartViewModel CreateModel(int chartId, ContentReference contentReferece)
+        {
+            var chart = _contentRepository.Get<ChartData>(new ContentReference(chartId));
+
+            var model = new ChartViewModel();
+            model.Id = chart.ContentLink.ID;
+            model.ActionAndEffects = chart.ActionAndEffects;
+            model.ChartType = chart.ChartType;
+            model.Description = chart.Description;
+            model.ShowLegend = chart.ShowLegend;
+            model.Theme = chart.Theme;
+            model.Title = chart.Title;
+            model.TitlePosition = chart.TitlePosition;
+            model.Data = chart.GetChartDataSource(contentReferece);
+            model.ChartType = chart.ChartType;
+
+            return model;
         }
 
         [HttpPost]
-        public RestResult Post(int? currentPageId, Guid[] guids)
+        public RestResult Post(int? currentPageId, int[] charts)
         {
             if(currentPageId.HasValue)
             {
@@ -96,117 +91,12 @@ namespace Site.Business.Store
 
                 var pageCharts = new PageCharts();
                 pageCharts.Id = EPiServer.Data.Identity.NewIdentity(currentPage.ContentGuid);
-                pageCharts.ChartTypes = guids;
+                pageCharts.Charts = charts;
 
                 _pageChartRepository.Save(pageCharts);
             }            
 
             return Rest(string.Empty);
         }
-
-        /*[HttpGet]
-        public RestResult Get(int? currentPageId)
-        {
-            var currentPage = _contentRepository.Get<PageData>(new ContentReference(currentPageId));
-
-            var pageStats = new PageStats();
-            pageStats.ModifiedAt = GetPageModifiedAt(currentPage.ContentLink);
-            pageStats.ModifiedBy = GetPageModifiedBy(currentPage.ContentLink);
-            pageStats.LinksToPage = GetLinksToPage(currentPage.ContentLink);
-
-            return Rest(pageStats);
-        }
-
-        [HttpGet]
-        public RestResult GetChartsMenu()
-        {
-            var list = new List<ChartViewModel>
-            {
-                new ChartViewModel { Id = Guid.NewGuid(), Name = "Page modified by" },
-                new ChartViewModel{ Id = Guid.NewGuid(), Name = "Page modified at" },
-                new ChartViewModel { Id = Guid.NewGuid(), Name = "Links to page" }
-            };
-            return Rest(list);
-        }*/
-
-        /*private List<Stats> GetPageModifiedAt(ContentReference contentReference)
-        {
-            var list = new List<Stats>();
-
-            /*var versions = _contentVersionRepository.List(contentReference)
-               .GroupBy(c => c.Saved.Month);
-
-           
-            for (int i = 1; i <= 12; i++)
-            {
-                var stats = new Stats();
-                stats.Month = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i);
-                if (versions.FirstOrDefault(v => v.Key == i) != null)
-                {
-                    stats.Number = versions.FirstOrDefault(v => v.Key == i).Count();
-                }
-                else
-                {
-                    stats.Number = new Random().Next(0, 20);
-                }
-                list.Add(stats);
-            }
-            return list;
-        }*/
-
-        /* private List<ModifiedByStats> GetPageModifiedBy(ContentReference contentReference)
-         {
-             var list = new List<ModifiedByStats>();
-             var versions = _contentVersionRepository.List(contentReference)
-                .GroupBy(c => c.SavedBy);                
-
-
-             /*foreach(var group in versions)
-             {
-                 var stats = new ModifiedByStats();
-                 stats.User = group.Key;
-                 stats.Number = group.Count();
-                 list.Add(stats);
-             }
-             return list;
-             }
-             */
-    
-
-    /*private List<LinksToPageStats> GetLinksToPage(ContentReference contentReference)
-        {
-            var list = new List<LinksToPageStats>();
-            var links = _contentSoftLinkRepository.Load(contentReference, true);
-
-            
-            list.Add(new LinksToPageStats { ContentType = "News type", Number = 15 });
-            list.Add(new LinksToPageStats { ContentType = "Article type", Number = 6 });
-            list.Add(new LinksToPageStats { ContentType = "Blog type", Number = 21 });
-            list.Add(new LinksToPageStats { ContentType = "Content type", Number = 4 });
-            list.Add(new LinksToPageStats { ContentType = "Landing type", Number = 2 });
-
-            return list;
-            foreach (var link in links)
-            {
-                var content = _contentRepository.Get<IContent>(link.OwnerContentLink);
-                var contentType = _contentTypeRepository.Load(content.ContentTypeID);
-
-                var item = list.FirstOrDefault(l => l.ContentType.Equals(contentType.Name));
-                if(item != null)
-                {
-                    item.Number++;
-                }
-                else
-                {
-                    item = new LinksToPageStats
-                    {
-                        ContentType = contentType.Name,
-                        Number = 1
-                    };
-                    list.Add(item);
-                }
-            return list;
-            }*/
-
     }
 }

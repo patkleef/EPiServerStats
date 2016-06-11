@@ -77,7 +77,7 @@
         
         postCreate: function () {
             var registry = dependency.resolve("epi.storeregistry");
-            this.store = registry.get("app.chartstore");
+            this.store = registry.get("chartstore");
 
             dojo.when(this.store.query(
                 {
@@ -86,70 +86,73 @@
         },
 
         renderChart: function (data) {
-            var chartType = "Line";
-
             var chartElement = domConstruct.create("div", { class: "chart" }, this.domNode);
             var chart = new Chart(chartElement);
-            chart.title = this.params.title;
-            chart.titlePos = this.params.titlePosition;
+            chart.title = data.title;
+            chart.titlePos = data.titlePosition;
             chart.titleGap = 10;
             chart.titleFont = "20px Myriad,Helvetica,Tahoma,Arial,clean,sans-serif";
 
-            if(this.params.theme !== null)
+            if (data.theme != null)
             {
-                chart.setTheme(dojo.getObject("dojox.charting.themes." + this.params.theme));
+                chart.setTheme(dojo.getObject("dojox.charting.themes." + data.theme));
             }
 
-            switch (chartType) {
-                case "Line":
-                    chart = this.renderLineChart(chart, data);
+            switch (data.chartType) {
+                case "LineChart":
+                    chart = this.renderLineChart(chart, data.data);
                     break;
-                case "Columns":
+                case "ColumnsChart":
                     chart = this.renderColumnsChart(chart);
                     break;
-                case "Pie":
+                case "PieChart":
                     chart = this.renderPieChart(chart);
                     break;
-                case "Bubbles":
+                case "BubblesChart":
                     chart = this.renderBubbleChart(chart);
                     break;
             }
 
-            var effectsArray = this.params.effects.split(",");
+            if (data.actionAndEffects != null) {
+                var effectsArray = data.actionAndEffects.split(",");
 
-            if (dojo.indexOf(effectsArray, "Highlight") !== -1) {
-                var chartHighlight = new dojox.charting.action2d.Highlight(chart, "default");
+                if (dojo.indexOf(effectsArray, "Highlight") !== -1) {
+                    var chartHighlight = new dojox.charting.action2d.Highlight(chart, "default");
+                }
+                if (dojo.indexOf(effectsArray, "Magnify") !== -1) {
+                    var chartMagnify = new Magnify(chart, "default", { scale: 2 });
+                }
+                if (dojo.indexOf(effectsArray, "MoveSlice") !== -1) {
+                    var chartMoveSlice = new MoveSlice(chart, "default", { scale: 2, shift: 7 });
+                }
+                if (dojo.indexOf(effectsArray, "Shake") !== -1) {
+                    var chartShake = new Shake(chart, "default", { shiftX: 5, shiftY: 5 });
+                }
+                if (dojo.indexOf(effectsArray, "Tooltip") !== -1) {
+                    var chartTooltip = new Tooltip(chart, "default");
+                }
+                if (dojo.indexOf(effectsArray, "MouseZoomAndPan") !== -1) {
+                    var chartMousezoomandpan = new MouseZoomAndPan(chart, "default", { axis: "x" });
+                }
+                if (dojo.indexOf(effectsArray, "MouseIndicator") !== -1) {
+                    var chartMouseindicator = new MouseIndicator(chart,
+                        "default",
+                        {
+                            series: "Series 1",
+                            mouseOver: true,
+                            font: "normal normal bold 12pt Tahoma",
+                            fillFunc: function(v) {
+                                return "green";
+                            },
+                            labelFunc: function(v) {
+                                return "x: " + v.x + ", y:" + v.y;
+                            }
+                        });
+                }
             }
-            if (dojo.indexOf(effectsArray, "Magnify") !== -1) {
-                var chartMagnify = new Magnify(chart, "default", { scale: 2 });
-            }
-            if (dojo.indexOf(effectsArray, "MoveSlice") !== -1) {
-                var chartMoveSlice = new MoveSlice(chart, "default", { scale: 2, shift: 7 });
-            }
-            if (dojo.indexOf(effectsArray, "Shake") !== -1) {
-                var chartShake = new Shake(chart, "default", { shiftX: 5, shiftY: 5 });
-            }
-            if (dojo.indexOf(effectsArray, "Tooltip") !== -1) {
-                var chartTooltip = new Tooltip(chart, "default");
-            }
-            if (dojo.indexOf(effectsArray, "MouseZoomAndPan") !== -1) {
-                var chartMousezoomandpan = new MouseZoomAndPan(chart, "default", { axis: "x"});
-            }
-            if (dojo.indexOf(effectsArray, "MouseIndicator") !== -1) {
-                var chartMouseindicator = new MouseIndicator(chart, "default", { series: "Series 1",
-                mouseOver: true,
-                    font: "normal normal bold 12pt Tahoma",
-                    fillFunc: function(v){
-                        return "green";
-                    },
-                    labelFunc: function(v){
-                        return "x: " + v.x + ", y:" + v.y;
-                    }});
-            }
-
             chart.render();
 
-            if (this.params.legend == "True") {
+            if (data.showLegend == "True") {
                 var chartLegendElement = domConstruct.create("div", { class: "chartLegend" }, chartElement);
                 var selectableLegend = new SelectableLegend({ chart: chart, outline: true }, chartLegendElement);
             }

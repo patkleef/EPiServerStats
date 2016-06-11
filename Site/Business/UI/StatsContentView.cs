@@ -6,7 +6,7 @@ using Site.Models.Pages;
 namespace Site.Business.UI
 {
     [ServiceConfiguration(typeof(ViewConfiguration))]
-    public class StatsContentView : ViewConfiguration<IContentData>
+    public class StatsContentView : ViewConfiguration<PageData>
     {
         public StatsContentView()
         {
@@ -16,8 +16,8 @@ namespace Site.Business.UI
             Description = "Charts content view";
             //ControllerType = "epi-cms/widget/IFrameController";
             ControllerType = "app/editors/chartcontentview";
-            //ViewType = "app/editors/chartcontentview";
             HideFromViewMenu = false;
+            IconClass = "epi-iconLayout";
         }
     }    
 }

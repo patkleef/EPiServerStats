@@ -138,19 +138,4 @@ namespace Site.Business.Widgets
         }
     }
 
-    [RestStore("chartstore1")]
-    public class InstantTemplatesStore : RestControllerBase
-    {
-
-        public InstantTemplatesStore()
-        {
-        }
-
-        public RestResult Get(string id)
-        {
-            
-            return Rest(null);
-        }
-    }
-
 }

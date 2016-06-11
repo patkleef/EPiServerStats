@@ -23,11 +23,13 @@
     "dojox/charting/Chart2D",
     "dojox/charting/DataSeries",
     "dojox/charting/DataChart",
+    "dojox/layout/ScrollPane",
 
     "epi/dependency",
     "epi/routes",
     "epi-cms/contentediting/StandardToolbar",
     "dojo/topic",
+     "app/editors/ChartWidget",
 
     "dojo/domReady!",
     "dojo/parser"
@@ -56,54 +58,58 @@
     Chart2D,
     DataSeries,
     DataChart,
+    ScrollPane,
 
     dependency,
     routes,
     StandardToolbar,
     topic,
+    ChartWidget,
     parser
     ) {
-        return declare("app.editors.chartcontentview", [
+        return declare("app.editors.chartcontentview",
+        [
             Widget, TemplatedMixin
         ],
         {
-            statsStore: null,
+            chartStore: null,
             contentStore: null,
             target: null,
             currentContentId: 1,
             templateString: template,
             toolbar: null,
 
-            postCreate: function () {
+            postCreate: function() {
                 this.toolbar = new StandardToolbar();
                 this.toolbar.placeAt(this.toolbarArea, "first");
-                
-                ready(this, function () {
-                    this.target = new Target("chartlist", { horizontal: "true", accept: ["episerver.core.icontentdata"], creator: this.chartsContentCreator });
 
-                    on(this.target, 'DndDrop', lang.hitch(this, this.onDndDrop));
+                ready(this,
+                    function() {
+                        this.target = new Target("chartlist",
+                        {
+                            horizontal: "true",
+                            accept: ["site.business.charts.chartdata"],
+                            creator: this.chartsContentCreator
+                        });
 
-                    /*var registry = dependency.resolve("epi.storeregistry");
-                    this.statsStore = registry.get("app.chartstore");
-                    if (this.statsStore == null)
-                    {
-                        registry.create("app.chartstore", routes.getRestPath({ moduleArea: "app", storeName: "chartstore" }));
-                        this.statsStore = registry.get("app.chartstore");
-                    }
+                        on(this.target, 'DndDrop', lang.hitch(this, this.onDndDrop));
 
-                    this.contentStore = registry.get("epi.cms.content.light");
-
-                    var contextService = epi.dependency.resolve("epi.shell.ContextService");
-                    var currentContext = contextService.currentContext;
-                    var res = currentContext.id.split("_");
-
-                    this.currentContentId = res[0];
-
-                    this.initCharts();      */              
-                });
+                        var registry = dependency.resolve("epi.storeregistry");
+                        this.chartStore = registry.get("chartstore");
+    
+                        this.contentStore = registry.get("epi.cms.content.light");
+    
+                        var contextService = epi.dependency.resolve("epi.shell.ContextService");
+                        var currentContext = contextService.currentContext;
+                        var res = currentContext.id.split("_");
+    
+                        this.currentContentId = res[0];
+    
+                        this.initCharts(); 
+                    });
             },
-            
-            updateView: function (data, context, additionalParams) {
+
+            updateView: function(data, context, additionalParams) {
                 // summary:
                 //    Sets up the view by loading the URL of the inner iframe.
                 if (data && data.skipUpdateView) {
@@ -118,25 +124,28 @@
                     }
                 });
             },
-            
+
             initCharts: function() {
-                dojo.when(this.statsStore.query(
-                {
-                    currentPageId: this.currentContentId
-                }), lang.hitch(this, function (value) {
-                        this.target.insertNodes(false, value);
+                dojo.when(this.chartStore.query(
+                    {
+                        currentPageId: this.currentContentId
+                    }),
+                    lang.hitch(this,
+                        function (value) {
+                            if (value.length > 0) {
+                                this.target.insertNodes(false, value);
 
-                        for (var i in this.target.map) {
-
-                            var data = this.target.getItem(i).data;
-                            var divChart = dom.byId(i).childNodes[0];
-                            this.renderChart(divChart.id, data);
-                        }
-                        dojo.query(".remove-chart").connect("onclick", lang.hitch(this, this.removeChart));
-                    }));
+                                for (var i in this.target.map) {
+                                    var data = this.target.getItem(i).data;
+                                    var divChart = dom.byId(i).childNodes[0];
+                                    this.renderChart(divChart.id, data.id);
+                                }
+                                dojo.query(".remove-chart").connect("onclick", lang.hitch(this, this.removeChart));
+                            }
+                        }));
             },
 
-            chartsContentCreator: function (item, hint) {
+            chartsContentCreator: function(item, hint) {
                 var uniqueId = common.getUniqueId();
 
                 var li = document.createElement("li");
@@ -149,38 +158,30 @@
                 li.appendChild(div);
 
                 var divRemove = document.createElement("div");
-                divRemove.setAttribute("class", "epi-iconTrash remove-chart");
+                divRemove.setAttribute("class", "epi-iconObjectTrash epi-icon--large remove-chart");
 
                 li.appendChild(divRemove);
 
                 return { node: li, data: item };
             },
 
-            onDndDrop: function (source, nodes, copy, target) {
-                //var data = source.getItem(nodes[0].id)
-
-                var chartId = Object.keys(target.selection)[0];                        
+            onDndDrop: function(source, nodes, copy, target) {
+                var chartId = Object.keys(target.selection)[0];
                 var divChart = dom.byId(chartId).childNodes[0];
 
-                this.renderChart(divChart, null);
-
-                /*dojo.when(this.statsStore.query(
-                {
-                    currentPageId: this.currentContentId,
-                    chartTypeId: data.data.id
-                }), lang.hitch(this, function (value) {
-                    this.renderChart(divChart.id, value);
-                }));
-                        
+                var chartData = source.getItem(nodes[0].id);
+                this.renderChart(divChart, chartData.data.contentLink);
+                       
                 var charts = [];
                 for(var i in target.map){
-                    charts.push(target.getItem(i).data.id);
+                    charts.push(chartData.data.contentLink);
                 }
-                this.statsStore.put({ currentPageId: this.currentContentId, guids: charts });*/
+                this.chartStore.put({ currentPageId: this.currentContentId, charts: charts });
+
                 dojo.query(".remove-chart").connect("onclick", lang.hitch(this, this.removeChart));
             },
 
-            removeChart: function (evt, args) {
+            removeChart: function(evt, args) {
                 var id = evt.currentTarget.parentElement.id;
 
                 this.target.delItem(id);
@@ -190,81 +191,16 @@
                 for (var i in this.target.map) {
                     charts.push(this.target.getItem(i).data.id);
                 }
-                this.statsStore.put({ currentPageId: this.currentContentId, guids: charts });
+                this.chartStore.put({ currentPageId: this.currentContentId, guids: charts });
             },
 
-            renderChart: function (id, data) {
-                var registry = dependency.resolve("epi.storeregistry");
-                registry.create("app.chartstore1", routes.getRestPath({ moduleArea: "app", storeName: "chartstore1" }));
-                var chartstore = registry.get("app.chartstore1");
-
-                var lines = new dojox.charting.DataChart(id, {
-                    displayRange: 7,
-                    xaxis: { labels: ["0", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"] },
-                    type: dojox.charting.plot2d.Lines
-                });
-                lines.setStore(chartstore, { symbol: "*" }, "historicPrice");
-
-                var chart2 = new Chart(id);
-                chart2.title = "testtest";
-                chart2.titlePos = "bottom";
-                chart2.titleGap = 25;
-                chart2.titleFont = "20px Myriad,Helvetica,Tahoma,Arial,clean,sans-serif";
-                chart2.titleFontColor = "#333";
-                this.renderLineChart(chart2, null);
-
-                switch (data.type) {
-                    case "LineChart":
-                        this.renderLineChart(chart2, data);
-                        break;
-                    case "PieChart":
-                        this.renderPieChart(chart2, data);
-                        break;
-                    case "ColumnsChart":
-                        this.renderColumnChart(chart2, data);
-                        break;
-                }               
-            },
-
-            renderLineChart(chart, data) {
-                chart.addPlot("default", { type: "Lines" });
-                chart.addAxis("y", { min: 1, max: 20, vertical: true, fixLower: "major", fixUpper: "major" });
-
-                //chart.addAxis("x", { labels: data.data.xLabels });
-                //chart.addSeries("Series 1", data.data.series);
-                var registry = dependency.resolve("epi.storeregistry");
-                registry.create("app.chartstore1", routes.getRestPath({ moduleArea: "app", storeName: "chartstore1" }));
-                var chartstore = registry.get("app.chartstore1");
-
-                chart.addSeries("Series 2", new DataSeries(chartstore, { query: { site: 1 } }, "value"));
-
-                chart.render();
-            },
-
-            renderPieChart(chart, data) {
-                chart.addPlot("default", {
-                    type: "Pie",
-                    radius: 100,
-                    fontColor: "white"
-                });
-                chart.addAxis("x");
-                chart.addAxis("y");
-
-                chart.addSeries("", data.data.series);
-
-                chart.render();
-            },
-
-            renderColumnChart(chart, data) {
-                chart.addPlot("default", { type: "Columns", gap: 1 });
-                chart.addAxis("y", { min: 1, max: 20, vertical: true, fixLower: "major", fixUpper: "major" });
-
-                chart.addAxis("x", { labels: data.data.xLabels });
-                chart.addSeries("Series 1", data.data.series);
-
-                chart.render();
+            renderChart: function(container, chartId) {
+                var chartWidget = new ChartWidget({
+                    currentPageId: this.currentContentId,
+                    chartId: chartId
+                }).placeAt(container);
             }
 
-        })
+        });
     }
 );
