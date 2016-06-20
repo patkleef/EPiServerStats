@@ -1,14 +1,19 @@
-﻿using EPiServer.Core;
-using EPiServer.ServiceLocation;
+﻿using EPiServer.ServiceLocation;
 using EPiServer.Shell;
 using Site.Business.Charts;
-using Site.Models.Pages;
 
 namespace Site.Business.UI
 {
+    /// <summary>
+    /// ViewConfiguration for the chart preview widget
+    /// </summary>
     [ServiceConfiguration(typeof(ViewConfiguration))]
     public class ChartPreviewContentView : ViewConfiguration<ChartData>
     {
+        /// <summary>
+        /// Public constructor
+        /// Set path to the Dojo widget and some layout settings
+        /// </summary>
         public ChartPreviewContentView()
         {
             SortOrder = 1;

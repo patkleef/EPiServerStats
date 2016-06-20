@@ -1,4 +1,5 @@
 ﻿define([
+    // dojo
    "dojo",
    "dojo/_base/declare",
    "dojo/dom-construct",
@@ -9,6 +10,7 @@
    "dojo/when",
    "dojo/_base/array",
 
+   // dojox
    "dojox/charting/Chart",
    "dojox/charting/axis2d/Default",
    "dojox/charting/plot2d/Lines",
@@ -20,7 +22,6 @@
    "dojox/charting/action2d/Tooltip",
    "dojox/charting/action2d/MouseZoomAndPan",
    "dojox/charting/action2d/MouseIndicator",
-
    "dojox/charting/widget/SelectableLegend",
    "dojox/charting/themes/Dollar",
    "dojox/charting/themes/Electric",
@@ -28,11 +29,14 @@
    "dojox/charting/themes/PurpleRain",
    "dojox/charting/themes/Renkoo",
 
+   // dijit
    "dijit/_Widget",
 
+   // epi
    "epi/dependency",
-    "epi/routes"
+   "epi/routes"
 ], function (
+    // dojo
    dojo,
    declare,
    domConstruct,
@@ -43,6 +47,7 @@
    when,
    array,
 
+   // dojox
    Chart,
    Default,
    Lines,
@@ -54,7 +59,6 @@
    Tooltip,
    MouseZoomAndPan,
    MouseIndicator,
-
    SelectableLegend,
    Dollar,
    Electric,
@@ -62,30 +66,48 @@
    PurpleRain,
    Renkoo,
 
+   // dijit
    Widget,
 
+   // epi
    dependency,
    routes
 ) {
-    return declare("app.editors.ChartWidget", [
-        Widget
-    ],
-    {
+    return declare("app.editors.ChartWidget", [Widget], {
+        // summary:
+        //      Chart widget
+        // description:
+        //      Widget for rendering a chart
+        // tags:
+        //      public
+
         store: null,
         currentPageId: 0,
         chartId: 0,
-        
+
         postCreate: function () {
+            // summary:
+            //      Create layout for the widget
+            // tags:
+            //      protected
+
             var registry = dependency.resolve("epi.storeregistry");
             this.store = registry.get("chartstore");
 
             dojo.when(this.store.query(
                 {
-                    currentPageId: this.currentPageId, chartId: this.chartId
-                }), lang.hitch(this, this.renderChart));
+                    currentPageId: this.currentPageId,
+                    chartId: this.chartId
+                }),
+                lang.hitch(this, this._renderChart));
         },
 
-        renderChart: function (data) {
+        _renderChart: function (data) {
+            // summary:
+            //      Renders the chart 
+            // tags:
+            //      private
+
             var chartElement = domConstruct.create("div", { class: "chart" }, this.domNode);
             var chart = new Chart(chartElement);
             chart.title = data.title;
@@ -93,24 +115,23 @@
             chart.titleGap = 10;
             chart.titleFont = "20px Myriad,Helvetica,Tahoma,Arial,clean,sans-serif";
 
-            if (data.theme != null)
-            {
+            if (data.theme != null) {
                 chart.setTheme(dojo.getObject("dojox.charting.themes." + data.theme));
             }
 
             switch (data.chartType) {
-                case "LineChart":
-                    chart = this.renderLineChart(chart, data.data);
-                    break;
-                case "ColumnsChart":
-                    chart = this.renderColumnsChart(chart);
-                    break;
-                case "PieChart":
-                    chart = this.renderPieChart(chart);
-                    break;
-                case "BubblesChart":
-                    chart = this.renderBubbleChart(chart);
-                    break;
+            case "LineChart":
+                chart = this._renderLineChart(chart, data.data);
+                break;
+            case "ColumnsChart":
+                chart = this._renderColumnsChart(chart, data.data);
+                break;
+            case "PieChart":
+                chart = this._renderPieChart(chart, data.data);
+                break;
+            case "BubblesChart":
+                chart = this._renderBubbleChart(chart, data.data);
+                break;
             }
 
             if (data.actionAndEffects != null) {
@@ -152,42 +173,64 @@
             }
             chart.render();
 
-            if (data.showLegend == "True") {
+            if (data.showLegend) {
                 var chartLegendElement = domConstruct.create("div", { class: "chartLegend" }, chartElement);
                 var selectableLegend = new SelectableLegend({ chart: chart, outline: true }, chartLegendElement);
             }
         },
 
-        renderLineChart: function (chart, data) {
+        _renderLineChart: function (chart, data) {
+            // summary:
+            //      Renders a line chart
+            // tags:
+            //      public
+
             chart.addPlot("default", { type: "Lines", tension: "X", markers: true });
 
-            chart.addAxis("y", { vertical: data.yAxLabel.vertical, fixLower: data.yAxLabel.fixLowerOption, fixUpper: data.yAxLabel.fixUpperOption, title: data.yAxLabel.text, titleOrientation: data.yAxLabel.titleOrientation });
-            chart.addAxis("x", { labels: data.xAxLabel.items, title: data.xAxLabel.text, titleOrientation: data.yAxLabel.titleOrientation });
-
-            array.forEach(data.series, function (val, i) {
-                chart.addSeries(val.name, val.series, { stroke: { color: val.color } });
+            chart.addAxis("y",
+            {
+                vertical: data.yAxLabel.vertical,
+                fixLower: data.yAxLabel.fixLowerOption,
+                fixUpper: data.yAxLabel.fixUpperOption,
+                title: data.yAxLabel.text,
+                titleOrientation: data.yAxLabel.titleOrientation
             });
+            chart.addAxis("x",
+            {
+                labels: data.xAxLabel.items,
+                title: data.xAxLabel.text,
+                titleOrientation: data.yAxLabel
+                    .titleOrientation
+            });
+
+            array.forEach(data.series,
+                function(val, i) {
+                    chart.addSeries(val.name, val.series, { stroke: { color: val.color } });
+                });
             return chart;
         },
 
-        renderPieChart: function (chart) {
+        _renderPieChart: function (chart, data) {
+            // summary:
+            //      Renders a pie chart
+            // tags:
+            //      public
+
             chart.addPlot("default", { type: "Pie", tension: "X" });
-
-            var dataSet1 = [{ y: 3, text: "2012" },
-                            { y: 7, text: "2013" },
-                            { y: 4, text: "2014" },
-                            { y: 9, text: "2015" },
-                            { y: 6, text: "2016" }];
-
-            var dataSet2 = [2, 5, 2, 5, 7, 3, 1];
-
-            chart.addSeries("Series 1", dataSet1);
+            
+            chart.addSeries(data.series.name, data.series.dataItems);
 
             return chart;
         },
 
-        renderBubbleChart: function (chart) {
+        _renderBubbleChart: function (chart) {
+            // summary:
+            //      Renders a bubble chart
+            // tags:
+            //      public
+
             chart.addPlot("default", { type: "Bubble" });
+
             chart.addAxis("x", { natual: true, includeZero: true, max: 7 });
             chart.addAxis("y", { natual: true, vertical: true, includeZero: true, max: 10 });
 
@@ -195,25 +238,34 @@
             return chart;
         },
 
-        renderColumnsChart: function (chart) {
+        _renderColumnsChart: function (chart, data) {
+            // summary:
+            //      Renders a columns chart
+            // tags:
+            //      public
             chart.addPlot("default", { type: "Columns", gap: 2 });
-            chart.addAxis("y", { min: 1, max: 800, vertical: true, fixLower: "major", fixUpper: "major" });
 
-            var lineChartXaxisData = [
-                { value: 1, text: "2007" },
-                { value: 2, text: "2008" },
-                { value: 3, text: "2009" },
-                { value: 4, text: "2010" },
-                { value: 5, text: "2011" },
-                { value: 6, text: "2012" },
-                { value: 7, text: "2013" },
-                { value: 8, text: "2014" },
-                { value: 9, text: "2015" },
-                { value: 10, text: "2016" }];
+            chart.addAxis("y",
+            {
+                vertical: data.yAxLabel.vertical,
+                fixLower: data.yAxLabel.fixLowerOption,
+                fixUpper: data.yAxLabel.fixUpperOption,
+                title: data.yAxLabel.text,
+                titleOrientation: data.yAxLabel.titleOrientation
+            });
+            chart.addAxis("x",
+            {
+                labels: data.xAxLabel.items,
+                title: data.xAxLabel.text,
+                titleOrientation: data.yAxLabel
+                    .titleOrientation
+            });
 
-            chart.addAxis("x", { labels: lineChartXaxisData });
-            chart.addSeries("Series 1", [90, 360, 230, 670, 410, 150, 480, 190, 290, 590]);
+            array.forEach(data.series,
+                function (val, i) {
+                    chart.addSeries(val.name, val.series, { stroke: { color: val.color } });
+                });
             return chart;
         }
-    })
+    });
 });

@@ -1,11 +1,13 @@
 ﻿using Site.Business.Charts;
-using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Site.Business.Charts.Data;
 
 namespace Site.Business.Store
 {
+    /// <summary>
+    /// View model used to return to the chart dashboard widget
+    /// </summary>
     public class ChartViewModel
     {
         public int Id { get; set; }

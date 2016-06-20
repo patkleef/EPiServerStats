@@ -8,9 +8,15 @@ using System.Globalization;
 
 namespace Site.Business.Charts
 {
-    [ContentType(DisplayName = "Page modified at chart", GUID = "8E70D0ED-D559-4B7C-A7D7-6608380F36C5", Description = "")]
-    public class PageModifiedAtChart : ChartData
+    /// <summary>
+    /// Page modified at line chart
+    /// </summary>
+    [ContentType(DisplayName = "Page modified at line chart", GUID = "8E70D0ED-D559-4B7C-A7D7-6608380F36C5", Description = "")]
+    public class PageModifiedAtLineChart : ChartData
     {
+        /// <summary>
+        /// Line chart
+        /// </summary>
         public override ChartType ChartType
         {
             get
@@ -19,9 +25,15 @@ namespace Site.Business.Charts
             }
         }
 
+        /// <summary>
+        /// Return data source for this chart
+        /// </summary>
+        /// <param name="contentReference"></param>
+        /// <returns></returns>
         public override ChartDataSource GetChartDataSource(ContentReference contentReference)
         {
-            var lineChartData = new LineChartData();
+            // TODO: get the information by retrieving all versions of the page
+            var lineChartData = new LineChartDataSource();
 
             var xLabelList = new List<AxLabelItem>();
             var seriesList = new List<int>();

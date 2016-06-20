@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
+﻿
 namespace Site.Business.Charts
 {
+    /// <summary>
+    /// Chart types
+    /// </summary>
     public enum ChartType
     {
-        PieChart,
-        LineChart,
-        ColumnsChart
+        PieChart = 1,
+        LineChart = 2,
+        ColumnsChart = 3
     }
 }

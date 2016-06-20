@@ -1,4 +1,5 @@
 ﻿define([
+    // dojo
     "dojo/_base/declare",
     "dojo/ready",
     "dojo/dom",
@@ -6,34 +7,27 @@
     "dojo/_base/lang",
     "dojo/_base/array",
     "dojo/dnd/common",
-    "dojo/dnd/Source",
     "dojo/dnd/Target",
     "dojo/dom-construct",
     "dojo/dom-attr",
     "dojo/on",
-    "dojo/text!./templates/chartcontentviewtemplate.html",
+    "dojo/text!./templates/chartdashboardviewtemplate.html",
 
+    // dijit
     "dijit/_TemplatedMixin",
     "dijit/_Widget",
 
-    "dojox/charting/Chart",
-    "dojox/charting/axis2d/Default",
-    "dojox/charting/plot2d/Lines",
-    "dojox/charting/plot2d/Pie",
-    "dojox/charting/Chart2D",
-    "dojox/charting/DataSeries",
-    "dojox/charting/DataChart",
-    "dojox/layout/ScrollPane",
-
+    // epi
     "epi/dependency",
     "epi/routes",
     "epi-cms/contentediting/StandardToolbar",
-    "dojo/topic",
-     "app/editors/ChartWidget",
+    "app/editors/ChartWidget",
 
     "dojo/domReady!",
-    "dojo/parser"
-], function(
+    "dojo/parser",
+    "xstyle/css!./templates/charts-style.css"
+], function (
+    // dojo
     declare,
     ready,
     dom,
@@ -41,37 +35,32 @@
     lang,
     array,
     common,
-    Source,
     Target,
     domConstruct,
     domAttr,
     on,
-
     template,
+
+    // dijit
     TemplatedMixin,
     Widget,
-    
-    Chart,
-    Default,
-    Lines,
-    Pie,
-    Chart2D,
-    DataSeries,
-    DataChart,
-    ScrollPane,
 
+    // epi
     dependency,
     routes,
     StandardToolbar,
-    topic,
     ChartWidget,
     parser
     ) {
-        return declare("app.editors.chartcontentview",
-        [
-            Widget, TemplatedMixin
-        ],
-        {
+
+        return declare("app.editors.chartdashboard", [Widget, TemplatedMixin], {
+        // summary:
+        //      Dashboard widget for displaying charts
+        // description:
+        //      Displays all charts for the current page. Charts can be drag and drop on the dashboard
+        // tags:
+            //      public
+
             chartStore: null,
             contentStore: null,
             target: null,
@@ -79,7 +68,12 @@
             templateString: template,
             toolbar: null,
 
-            postCreate: function() {
+            postCreate: function () {
+                // summary:
+                //      Create the layout for the dashboard
+                // tags:
+                //      protected
+
                 this.toolbar = new StandardToolbar();
                 this.toolbar.placeAt(this.toolbarArea, "first");
 
@@ -105,13 +99,16 @@
     
                         this.currentContentId = res[0];
     
-                        this.initCharts(); 
+                        this._initCharts();
                     });
             },
 
             updateView: function(data, context, additionalParams) {
                 // summary:
-                //    Sets up the view by loading the URL of the inner iframe.
+                //      Called when menu item is clicked
+                // tags:
+                //      protected
+
                 if (data && data.skipUpdateView) {
                     return;
                 }
@@ -125,7 +122,13 @@
                 });
             },
 
-            initCharts: function() {
+            _initCharts: function () {
+                // summary:
+                //      Called when the page is loaded. 
+                //      Get saved chart from the chartStore
+                // tags:
+                //      private
+
                 dojo.when(this.chartStore.query(
                     {
                         currentPageId: this.currentContentId
@@ -145,7 +148,12 @@
                         }));
             },
 
-            chartsContentCreator: function(item, hint) {
+            chartsContentCreator: function (item, hint) {
+                // summary:
+                //      Create the chart container in the Source object
+                // tags:
+                //      public
+
                 var uniqueId = common.getUniqueId();
 
                 var li = document.createElement("li");
@@ -165,7 +173,13 @@
                 return { node: li, data: item };
             },
 
-            onDndDrop: function(source, nodes, copy, target) {
+            onDndDrop: function (source, nodes, copy, target) {
+                // summary:
+                //      Called when an item is dropped in the Source.
+                //      Render a chart
+                // tags:
+                //      protected
+
                 var chartId = Object.keys(target.selection)[0];
                 var divChart = dom.byId(chartId).childNodes[0];
 
@@ -173,15 +187,20 @@
                 this.renderChart(divChart, chartData.data.contentLink);
                        
                 var charts = [];
-                for(var i in target.map){
-                    charts.push(chartData.data.contentLink);
+                for (var i in target.map) {
+                    charts.push(target.getItem(i).data.contentLink);
                 }
                 this.chartStore.put({ currentPageId: this.currentContentId, charts: charts });
 
                 dojo.query(".remove-chart").connect("onclick", lang.hitch(this, this.removeChart));
             },
 
-            removeChart: function(evt, args) {
+            removeChart: function (evt, args) {
+                // summary:
+                //      Remove a chart from the dashboard
+                // tags:
+                //      protected
+
                 var id = evt.currentTarget.parentElement.id;
 
                 this.target.delItem(id);
@@ -194,7 +213,13 @@
                 this.chartStore.put({ currentPageId: this.currentContentId, guids: charts });
             },
 
-            renderChart: function(container, chartId) {
+            renderChart: function (container, chartId) {
+                // summary:
+                //      Render chart method
+                //      Create new chart widget an insert it in the HTML
+                // tags:
+                //      protected
+
                 var chartWidget = new ChartWidget({
                     currentPageId: this.currentContentId,
                     chartId: chartId

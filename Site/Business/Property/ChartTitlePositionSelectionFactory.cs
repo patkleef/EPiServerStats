@@ -1,13 +1,18 @@
 ﻿using EPiServer.Shell.ObjectEditing;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace Site.Business.Property
 {
+    /// <summary>
+    /// Selection factory for title position options
+    /// </summary>
     public class ChartTitlePositionSelectionFactory : ISelectionFactory
     {
+        /// <summary>
+        /// Get all title position options
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
         public IEnumerable<ISelectItem> GetSelections(ExtendedMetadata metadata)
         {
             return new ISelectItem[]

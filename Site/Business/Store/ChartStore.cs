@@ -1,42 +1,44 @@
 ﻿using EPiServer;
 using EPiServer.Core;
-using EPiServer.DataAbstraction;
 using EPiServer.ServiceLocation;
 using EPiServer.Shell.Services.Rest;
 using Site.Business.Charts;
 using Site.Business.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 
 namespace Site.Business.Store
 {
+    /// <summary>
+    /// Rest store for charts
+    /// </summary>
     [RestStore("chartstore")]
     public class ChartStore : RestControllerBase
     {
         private readonly IContentRepository _contentRepository;
-        private readonly IContentVersionRepository _contentVersionRepository;
-        private readonly IContentSoftLinkRepository _contentSoftLinkRepository;
-        private readonly IContentTypeRepository _contentTypeRepository;
         private readonly PageChartsRepository _pageChartRepository;
-        private readonly ChartRegistration _chartRegistration;
 
+        /// <summary>
+        /// Public constructor
+        /// </summary>
         public ChartStore()
         {
             _contentRepository = ServiceLocator.Current.GetInstance<IContentRepository>();
-            _contentVersionRepository = ServiceLocator.Current.GetInstance<IContentVersionRepository>();
-            _contentSoftLinkRepository = ServiceLocator.Current.GetInstance<IContentSoftLinkRepository>();
-            _contentTypeRepository = ServiceLocator.Current.GetInstance<IContentTypeRepository>();
-            _chartRegistration = ServiceLocator.Current.GetInstance<ChartRegistration>();
 
             _pageChartRepository = new PageChartsRepository();
         }
 
+        /// <summary>
+        /// Get method
+        /// Used when a page is loaded and when a chart is dropped on the dashboard
+        /// </summary>
+        /// <param name="currentPageId"></param>
+        /// <param name="chartId"></param>
+        /// <returns></returns>
         [HttpGet]
         public RestResult Get(int? currentPageId, int? chartId)
         {
-            if (currentPageId.HasValue && chartId.HasValue)
+            if (currentPageId.HasValue && chartId.HasValue) // chart is dropped in the dashboard
             {
                 var currentPage = _contentRepository.Get<PageData>(new ContentReference(currentPageId.Value));
 
@@ -44,7 +46,7 @@ namespace Site.Business.Store
 
                 return Rest(model);
             }
-            else if(currentPageId.HasValue && !chartId.HasValue)
+            else if(currentPageId.HasValue && !chartId.HasValue) // page is loaded so get all charts
             {
                 var currentPage = _contentRepository.Get<PageData>(new ContentReference(currentPageId.Value));
                 var pageCharts = _pageChartRepository.GetByContentGuid(currentPage.ContentGuid);
@@ -63,25 +65,13 @@ namespace Site.Business.Store
             return Rest(string.Empty);  
         }
 
-        public ChartViewModel CreateModel(int chartId, ContentReference contentReferece)
-        {
-            var chart = _contentRepository.Get<ChartData>(new ContentReference(chartId));
-
-            var model = new ChartViewModel();
-            model.Id = chart.ContentLink.ID;
-            model.ActionAndEffects = chart.ActionAndEffects;
-            model.ChartType = chart.ChartType;
-            model.Description = chart.Description;
-            model.ShowLegend = chart.ShowLegend;
-            model.Theme = chart.Theme;
-            model.Title = chart.Title;
-            model.TitlePosition = chart.TitlePosition;
-            model.Data = chart.GetChartDataSource(contentReferece);
-            model.ChartType = chart.ChartType;
-
-            return model;
-        }
-
+        /// <summary>
+        /// Post method
+        /// Used when a chart is dropped on the dashboard
+        /// </summary>
+        /// <param name="currentPageId"></param>
+        /// <param name="charts"></param>
+        /// <returns></returns>
         [HttpPost]
         public RestResult Post(int? currentPageId, int[] charts)
         {
@@ -97,6 +87,30 @@ namespace Site.Business.Store
             }            
 
             return Rest(string.Empty);
+        }
+
+        /// <summary>
+        /// Create model to return to the chart dashboard widget
+        /// </summary>
+        /// <param name="chartId"></param>
+        /// <param name="contentReferece"></param>
+        /// <returns></returns>
+        private ChartViewModel CreateModel(int chartId, ContentReference contentReferece)
+        {
+            var chart = _contentRepository.Get<ChartData>(new ContentReference(chartId));
+
+            var model = new ChartViewModel();
+            model.Id = chart.ContentLink.ID;
+            model.ActionAndEffects = chart.ActionAndEffects;
+            model.Description = chart.Description;
+            model.ShowLegend = chart.ShowLegend;
+            model.Theme = chart.Theme;
+            model.Title = chart.Title;
+            model.TitlePosition = chart.TitlePosition;
+            model.Data = chart.GetChartDataSource(contentReferece);
+            model.ChartType = chart.ChartType;
+
+            return model;
         }
     }
 }
