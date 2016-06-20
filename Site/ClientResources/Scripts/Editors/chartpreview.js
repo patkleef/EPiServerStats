@@ -2,6 +2,8 @@
     // dojo
    "dojo",
    "dojo/_base/declare",
+   "dojo/topic",
+   "dojo/_base/lang",
 
    // dijit
    "dijit/_Widget",
@@ -19,6 +21,8 @@
     // dojo
    dojo,
    declare,
+   topic,
+   lang,
 
    // dijit
    Widget,
@@ -50,8 +54,10 @@
             // tags:
             //      public
 
+            topic.subscribe('/epi/shell/context/changed', lang.hitch(this, this._init));
+
             this.toolbar = new StandardToolbar();
-            this.toolbar.placeAt(this.toolbarArea, "first");4
+            this.toolbar.placeAt(this.toolbarArea, "first");
 
             var registry = dependency.resolve("epi.storeregistry");
             this.contentStore = registry.get("epi.cms.content.light");
@@ -61,6 +67,17 @@
             var res = currentContext.id.split("_");
 
             this.currentContentId = res[0];
+
+            this._init();
+        },
+
+        _init: function () {
+            // summary:
+            //      Initialize the chart
+            // tags:
+            //      public
+
+            dojo.empty(this.chartsContainer);
 
             var chartWidget = new ChartWidget({
                 currentPageId: 8,

@@ -259,7 +259,6 @@
     <Compile Include="Business\UI\PageDataUIDescriptor.cs" />
     <Compile Include="Business\UI\ChartPreviewContentView.cs" />
     <Compile Include="Business\UI\ChartsDasboardView.cs" />
-    <Compile Include="Controllers\ChartController.cs" />
     <Compile Include="Controllers\HomePageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -297,7 +296,6 @@
     <Content Include="modules\_protected\CMS\CMS.zip" />
     <Content Include="modules\_protected\EPiServer.Packaging.UI\web.config" />
     <Content Include="modules\_protected\EPiServer.Packaging.UI\EPiServer.Packaging.UI.zip" />
-    <Content Include="Views\Chart\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
