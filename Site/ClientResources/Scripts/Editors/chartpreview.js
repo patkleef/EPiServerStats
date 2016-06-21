@@ -61,13 +61,7 @@
 
             var registry = dependency.resolve("epi.storeregistry");
             this.contentStore = registry.get("epi.cms.content.light");
-
-            var contextService = epi.dependency.resolve("epi.shell.ContextService");
-            var currentContext = contextService.currentContext;
-            var res = currentContext.id.split("_");
-
-            this.currentContentId = res[0];
-
+            
             this._init();
         },
 
@@ -78,6 +72,12 @@
             //      public
 
             dojo.empty(this.chartsContainer);
+            
+            var contextService = epi.dependency.resolve("epi.shell.ContextService");
+            var currentContext = contextService.currentContext;
+            var res = currentContext.id.split("_");
+
+            this.currentContentId = res[0];
 
             var chartWidget = new ChartWidget({
                 currentPageId: 8,
