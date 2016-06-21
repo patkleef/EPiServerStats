@@ -208,9 +208,15 @@
 
                 var charts = [];
                 for (var i in this.target.map) {
-                    charts.push(this.target.getItem(i).data.id);
+                    var temp = this.target.getItem(i);
+                    if (temp.data.id != null && temp.data.id > 0) {
+                        charts.push(temp.data.id);
+                    } else {
+                        charts.push(temp.data.contentLink);
+                    }
+                    
                 }
-                this.chartStore.put({ currentPageId: this.currentContentId, guids: charts });
+                this.chartStore.put({ currentPageId: this.currentContentId, charts: charts });
             },
 
             renderChart: function (container, chartId) {
